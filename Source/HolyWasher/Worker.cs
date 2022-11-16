@@ -1,6 +1,6 @@
 ﻿using Verse;
 
-namespace HollyWasher
+namespace HolyWasher
 {
     public class Worker : RecipeWorker
     {

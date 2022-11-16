@@ -3,34 +3,35 @@ using RimWorld;
 using Verse;
 using Verse.AI;
 
-namespace HollyWasher
+namespace HolyWasher
 {
+    // ReSharper disable once InconsistentNaming
     public abstract class JobDriver_DoBill : JobDriver
     {
-        public const TargetIndex tableTI = TargetIndex.A;
-        public const TargetIndex objectTI = TargetIndex.B;
-        public const TargetIndex haulTI = TargetIndex.C;
+        protected const TargetIndex TableTi = TargetIndex.A;
+        private protected const TargetIndex ObjectTi = TargetIndex.B;
+        private const TargetIndex HaulTi = TargetIndex.C;
 
         protected override IEnumerable<Toil> MakeNewToils()
         {
-            this.FailOnDestroyedNullOrForbidden(tableTI);
-            this.FailOnBurningImmobile(objectTI);
-            this.FailOnDestroyedNullOrForbidden(objectTI);
-            this.FailOnBurningImmobile(objectTI);
-            yield return Toils_Reserve.Reserve(tableTI);
-            yield return Toils_Reserve.Reserve(objectTI);
-            yield return Toils_Goto.GotoThing(objectTI, PathEndMode.Touch);
-            yield return Toils_Haul.StartCarryThing(objectTI);
-            yield return Toils_Goto.GotoThing(tableTI, PathEndMode.InteractionCell);
-            yield return Toils_Haul.PlaceHauledThingInCell(tableTI, null, false);
+            this.FailOnDestroyedNullOrForbidden(TableTi);
+            this.FailOnBurningImmobile(ObjectTi);
+            this.FailOnDestroyedNullOrForbidden(ObjectTi);
+            this.FailOnBurningImmobile(ObjectTi);
+            yield return Toils_Reserve.Reserve(TableTi);
+            yield return Toils_Reserve.Reserve(ObjectTi);
+            yield return Toils_Goto.GotoThing(ObjectTi, PathEndMode.Touch);
+            yield return Toils_Haul.StartCarryThing(ObjectTi);
+            yield return Toils_Goto.GotoThing(TableTi, PathEndMode.InteractionCell);
+            yield return Toils_Haul.PlaceHauledThingInCell(TableTi, null, false);
             yield return DoBill();
             yield return Store();
-            yield return Toils_Reserve.Reserve(haulTI);
-            yield return Toils_Haul.CarryHauledThingToCell(haulTI);
-            yield return Toils_Haul.PlaceHauledThingInCell(haulTI, null, false);
-            yield return Toils_Reserve.Release(objectTI);
-            yield return Toils_Reserve.Release(haulTI);
-            yield return Toils_Reserve.Release(tableTI);
+            yield return Toils_Reserve.Reserve(HaulTi);
+            yield return Toils_Haul.CarryHauledThingToCell(HaulTi);
+            yield return Toils_Haul.PlaceHauledThingInCell(HaulTi, null, false);
+            yield return Toils_Reserve.Release(ObjectTi);
+            yield return Toils_Reserve.Release(HaulTi);
+            yield return Toils_Reserve.Release(TableTi);
         }
 
         protected abstract Toil DoBill();
@@ -42,7 +43,7 @@ namespace HollyWasher
             {
                 var actor = toil.actor;
                 var curJob = actor.jobs.curJob;
-                var objectThing = curJob.GetTarget(objectTI).Thing;
+                var objectThing = curJob.GetTarget(ObjectTi).Thing;
 
                 if (curJob.bill.GetStoreMode() != BillStoreModeDefOf.DropOnFloor)
                 {
@@ -50,7 +51,7 @@ namespace HollyWasher
                         StoragePriority.Unstored, actor.Faction, out var vec))
                     {
                         actor.carryTracker.TryStartCarry(objectThing, 1);
-                        curJob.SetTarget(haulTI, vec);
+                        curJob.SetTarget(HaulTi, vec);
                         curJob.count = 99999;
                         return;
                     }

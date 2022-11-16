@@ -5,15 +5,16 @@ using RimWorld;
 using Verse;
 using Verse.AI;
 
-namespace HollyWasher
+namespace HolyWasher
 {
-    public class JobDriver_HollyWash : JobDriver_DoBill
+    // ReSharper disable once InconsistentNaming
+    public class JobDriver_HolyWash : JobDriver_DoBill
     {
-        private readonly FieldInfo ApparelWornByCorpseInt = typeof(Apparel).GetField("wornByCorpseInt",
+        private readonly FieldInfo _apparelWornByCorpseInt = typeof(Apparel).GetField("wornByCorpseInt",
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
-        private float workCycle;
-        private float workCycleProgress;
+        private float _workCycle;
+        private float _workCycleProgress;
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
@@ -24,15 +25,15 @@ namespace HollyWasher
         {
             var actor = GetActor();
             var curJob = actor.jobs.curJob;
-            var objectThing = curJob.GetTarget(objectTI).Thing;
-            var tableThing = curJob.GetTarget(tableTI).Thing as Building_WorkTable;
+            var objectThing = curJob.GetTarget(ObjectTi).Thing;
+            var tableThing = curJob.GetTarget(TableTi).Thing as Building_WorkTable;
 
             var toil = new Toil
             {
                 initAction = delegate
                 {
                     curJob.bill.Notify_DoBillStarted(actor);
-                    workCycleProgress = workCycle = Math.Max(curJob.bill.recipe.workAmount, 10f);
+                    _workCycleProgress = _workCycle = Math.Max(curJob.bill.recipe.workAmount, 10f);
                 },
                 tickAction = delegate
                 {
@@ -41,15 +42,11 @@ namespace HollyWasher
                         actor.jobs.EndCurrentJob(JobCondition.Incompletable);
                     }
 
-                    workCycleProgress -= actor.GetStatValue(StatDefOf.WorkToMake);
+                    _workCycleProgress -= actor.GetStatValue(StatDefOf.WorkToMake);
 
                     tableThing?.UsedThisTick();
-                    //if (!tableThing.UsableNow)
-                    //{
-                    //    actor.jobs.EndCurrentJob(JobCondition.Incompletable);
-                    //}
 
-                    if (!(workCycleProgress <= 0))
+                    if (!(_workCycleProgress <= 0))
                     {
                         return;
                     }
@@ -59,35 +56,32 @@ namespace HollyWasher
                     {
                         var skill = actor.skills.GetSkill(skillDef);
 
-                        if (skill != null)
-                        {
-                            skill.Learn(0.11f * curJob.RecipeDef.workSkillLearnFactor);
-                        }
+                        skill?.Learn(0.11f * curJob.RecipeDef.workSkillLearnFactor);
                     }
 
                     actor.GainComfortFromCellIfPossible();
 
                     if (objectThing is Apparel mendApparel)
                     {
-                        ApparelWornByCorpseInt.SetValue(mendApparel, false);
+                        _apparelWornByCorpseInt.SetValue(mendApparel, false);
                     }
 
                     var list = new List<Thing> { objectThing };
                     curJob.bill.Notify_IterationCompleted(actor, list);
 
-                    workCycleProgress = workCycle;
+                    _workCycleProgress = _workCycle;
                     ReadyForNextToil();
                 },
                 defaultCompleteMode = ToilCompleteMode.Never
             };
 
 
-            toil.WithEffect(() => curJob.bill.recipe.effectWorking, tableTI);
+            toil.WithEffect(() => curJob.bill.recipe.effectWorking, TableTi);
             toil.PlaySustainerOrSound(() => toil.actor.CurJob.bill.recipe.soundWorking);
-            toil.WithProgressBar(tableTI, () => objectThing.HitPoints / (float)objectThing.MaxHitPoints,
+            toil.WithProgressBar(TableTi, () => objectThing.HitPoints / (float)objectThing.MaxHitPoints,
                 false, 0.5f);
             toil.FailOn(() => curJob.bill.suspended || curJob.bill.DeletedOrDereferenced ||
-                              curJob.GetTarget(tableTI).Thing is IBillGiver billGiver &&
+                              curJob.GetTarget(TableTi).Thing is IBillGiver billGiver &&
                               !billGiver.CurrentlyUsableForBills());
             return toil;
         }

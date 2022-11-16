@@ -2,46 +2,28 @@
 using Verse;
 using Verse.AI;
 
-namespace HollyWasher
+namespace HolyWasher
 {
+    // ReSharper disable once InconsistentNaming
     public abstract class WorkGiver_DoBill : WorkGiver_Scanner
     {
         private static readonly IntRange ReCheckFailedBillTicksRange = new IntRange(500, 600);
 
-        private static string MissingSkillTranslated;
-        private static string MissingMaterialsTranslated;
+        private static string _missingSkillTranslated;
+        private static string _missingMaterialsTranslated;
 
-        private readonly JobDef jobDef;
+        private readonly JobDef _jobDef;
 
         protected WorkGiver_DoBill(JobDef job)
         {
-            if (MissingSkillTranslated == null)
-            {
-                MissingSkillTranslated = "MissingSkill".Translate();
-            }
-
-            if (MissingMaterialsTranslated == null)
-            {
-                MissingMaterialsTranslated = "MissingMaterials".Translate();
-            }
-
-            jobDef = job;
+            _missingSkillTranslated ??= "MissingSkill".Translate();
+            _missingMaterialsTranslated ??= "MissingMaterials".Translate();
+            _jobDef = job;
         }
 
         public override PathEndMode PathEndMode => PathEndMode.Touch;
 
-        public override ThingRequest PotentialWorkThingRequest
-        {
-            get
-            {
-                if (def.fixedBillGiverDefs is { Count: 1 })
-                {
-                    return ThingRequest.ForDef(def.fixedBillGiverDefs[0]);
-                }
-
-                return ThingRequest.ForGroup(ThingRequestGroup.PotentialBillGiver);
-            }
-        }
+        public override ThingRequest PotentialWorkThingRequest => def.fixedBillGiverDefs is { Count: 1 } ? ThingRequest.ForDef(def.fixedBillGiverDefs[0]) : ThingRequest.ForGroup(ThingRequestGroup.PotentialBillGiver);
 
         public override Job JobOnThing(Pawn pawn, Thing t, bool forced = false)
         {
@@ -74,14 +56,13 @@ namespace HollyWasher
         {
             foreach (var bill in giver.BillStack)
             {
-                // use HollyWasher.Worker as a filter so we can use the same tables.
+                // use HolyWasher.Worker as a filter so we can use the same tables.
                 if (bill.recipe.workerClass != typeof(Worker))
                 {
                     continue;
                 }
 
-                if (Find.TickManager.TicksGame <
-                    bill.lastIngredientSearchFailTicks + ReCheckFailedBillTicksRange.RandomInRange &&
+                if (Find.TickManager.TicksGame < bill.nextTickToSearchForIngredients + ReCheckFailedBillTicksRange.RandomInRange &&
                     FloatMenuMakerMap.makingFor == null)
                 {
                     continue;
@@ -99,7 +80,7 @@ namespace HollyWasher
 
                 if (!bill.recipe.PawnSatisfiesSkillRequirements(pawn))
                 {
-                    JobFailReason.Is(MissingSkillTranslated);
+                    JobFailReason.Is(_missingSkillTranslated);
                 }
                 else
                 {
@@ -169,7 +150,7 @@ namespace HollyWasher
                 return job;
             }
 
-            var job2 = new Job(jobDef, (Thing)giver, chosen)
+            var job2 = new Job(_jobDef, (Thing)giver, chosen)
             {
                 count = 1,
                 haulMode = HaulMode.ToCellNonStorage,
