@@ -32,7 +32,7 @@
     <interactionCellOffset>(0,0,-1)</interactionCellOffset>
     <surfaceType>Item</surfaceType>
     <recipes>
-      <li>HollyWashApparel</li>
+      <li>HolyWashApparel</li>
     </recipes>
     <inspectorTabs>
       <li>ITab_Bills</li>
@@ -100,7 +100,7 @@
     <interactionCellOffset>(0,0,-1)</interactionCellOffset>
     <surfaceType>Item</surfaceType>
     <recipes>
-      <li>HollyWashApparel</li>
+      <li>HolyWashApparel</li>
     </recipes>
     <inspectorTabs>
       <li>ITab_Bills</li>
