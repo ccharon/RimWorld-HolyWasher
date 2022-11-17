@@ -138,7 +138,7 @@ namespace HolyWasher
             }
 
             Log.Error(
-                "HollyWash :: Tried to find bill ingredients for " + billGiver + " which has no interaction cell.");
+                "HolyWash :: Tried to find bill ingredients for " + billGiver + " which has no interaction cell.");
             return forPawn.Position;
         }
 

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputPath>..\..\1.4\Assemblies</OutputPath>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
@@ -14,5 +14,14 @@
       <ExcludeAssets>runtime</ExcludeAssets>
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="obj\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="obj\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="obj\**" />
   </ItemGroup>
 </Project>

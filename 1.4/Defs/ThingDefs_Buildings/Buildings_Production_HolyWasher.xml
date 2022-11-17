@@ -46,18 +46,6 @@
         <shortCircuitInRain>true</shortCircuitInRain>
         <basePowerConsumption>300</basePowerConsumption>
       </li>
-      <!-- ============= COMING IN NEXT UPDATE =============
-	  <li Class="CompProperties_Refuelable">
-        <fuelConsumptionRate>25.0</fuelConsumptionRate>
-        <fuelCapacity>50</fuelCapacity>
-        <fuelFilter>
-          <thingDefs>
-            <li>Soap</li>
-          </thingDefs>
-        </fuelFilter>
-        <consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed>
-      </li>
-	  -->
       <li Class="CompProperties_Flickable" />
       <li Class="CompProperties_Breakdownable" />
     </comps>
@@ -108,21 +96,7 @@
     <building>
       <spawnedConceptLearnOpportunity>BillsTab</spawnedConceptLearnOpportunity>
     </building>
-    <comps>
-      <li Class="CompProperties_Breakdownable" />
-      <!-- ============= COMING IN NEXT UPDATE =============
-	 <li Class="CompProperties_Refuelable">
-        <fuelConsumptionRate>100.0</fuelConsumptionRate>
-        <fuelCapacity>10</fuelCapacity>
-        <fuelFilter>
-          <thingDefs>
-            <li>Soap</li>
-          </thingDefs>
-        </fuelFilter>
-        <consumeFuelOnlyWhenUsed>true</consumeFuelOnlyWhenUsed>
-      </li>
-	  -->
-    </comps>
+    <comps/>
     <researchPrerequisites>
       <li>BasicWashing</li>
     </researchPrerequisites>
