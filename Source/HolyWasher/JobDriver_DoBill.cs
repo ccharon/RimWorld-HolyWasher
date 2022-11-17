@@ -67,12 +67,7 @@ namespace HolyWasher
 
         public override string GetReport()
         {
-            if (pawn.jobs.curJob.RecipeDef != null)
-            {
-                return base.ReportStringProcessed(pawn.jobs.curJob.RecipeDef.jobString);
-            }
-
-            return base.GetReport();
+            return pawn.jobs.curJob.RecipeDef != null ? base.ReportStringProcessed(pawn.jobs.curJob.RecipeDef.jobString) : base.GetReport();
         }
     }
 }

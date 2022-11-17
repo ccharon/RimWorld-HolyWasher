@@ -44,12 +44,7 @@ namespace HolyWasher
 
         private bool ThingIsUsableBillGiver(Thing thing)
         {
-            if (def.fixedBillGiverDefs != null && def.fixedBillGiverDefs.Contains(thing.def))
-            {
-                return true;
-            }
-
-            return false;
+            return def.fixedBillGiverDefs != null && def.fixedBillGiverDefs.Contains(thing.def);
         }
 
         private Job StartOrResumeBillJob(Pawn pawn, IBillGiver giver)
