@@ -23,7 +23,7 @@ namespace HolyWasher
         protected override IEnumerable<Toil> MakeNewToils()
         {
             this.FailOnDestroyedNullOrForbidden(TableTi);
-            this.FailOnBurningImmobile(ObjectTi);
+            this.FailOnBurningImmobile(TableTi);
             this.FailOnDestroyedNullOrForbidden(ObjectTi);
             this.FailOnBurningImmobile(ObjectTi);
             yield return Toils_Reserve.Reserve(TableTi);
