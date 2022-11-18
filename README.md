@@ -2,7 +2,7 @@
 
 Holy Washer that removes worn by corpse effect from apparel.
 
-![HolyWasher](About/preview.png)
+![HolyWasher](About/Preview.png)
 
 Made RimWorld 1.4 compatible and cleaned old / unused stuff.
 
