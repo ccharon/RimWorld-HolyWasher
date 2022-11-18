@@ -8,20 +8,73 @@ using Verse.AI;
 namespace HolyWasher
 {
     // ReSharper disable once InconsistentNaming
-    public class JobDriver_HolyWash : JobDriver_DoBill
+    // ReSharper disable once UnusedType.Global
+    public class JobDriver_HolyWash : JobDriver
     {
-        private readonly FieldInfo _apparelWornByCorpseInt = typeof(Apparel).GetField("wornByCorpseInt",
-            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        private const TargetIndex TableTi = TargetIndex.A;
+        private const TargetIndex ObjectTi = TargetIndex.B;
+        private const TargetIndex HaulTi = TargetIndex.C;
+        
+        private readonly FieldInfo _apparelWornByCorpseInt = typeof(Apparel).GetField("wornByCorpseInt", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
         private float _workCycle;
         private float _workCycleProgress;
 
+        protected override IEnumerable<Toil> MakeNewToils()
+        {
+            this.FailOnDestroyedNullOrForbidden(TableTi);
+            this.FailOnBurningImmobile(ObjectTi);
+            this.FailOnDestroyedNullOrForbidden(ObjectTi);
+            this.FailOnBurningImmobile(ObjectTi);
+            yield return Toils_Reserve.Reserve(TableTi);
+            yield return Toils_Reserve.Reserve(ObjectTi);
+            yield return Toils_Goto.GotoThing(ObjectTi, PathEndMode.Touch);
+            yield return Toils_Haul.StartCarryThing(ObjectTi);
+            yield return Toils_Goto.GotoThing(TableTi, PathEndMode.InteractionCell);
+            yield return Toils_Haul.PlaceHauledThingInCell(TableTi, null, false);
+            yield return DoBill();
+            yield return Store();
+            yield return Toils_Reserve.Reserve(HaulTi);
+            yield return Toils_Haul.CarryHauledThingToCell(HaulTi);
+            yield return Toils_Haul.PlaceHauledThingInCell(HaulTi, null, false);
+            yield return Toils_Reserve.Release(ObjectTi);
+            yield return Toils_Reserve.Release(HaulTi);
+            yield return Toils_Reserve.Release(TableTi);
+        }
+        
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
             return true;
         }
 
-        protected override Toil DoBill()
+        private static Toil Store()
+        {
+            var toil = new Toil();
+            toil.initAction = delegate
+            {
+                var actor = toil.actor;
+                var curJob = actor.jobs.curJob;
+                var objectThing = curJob.GetTarget(ObjectTi).Thing;
+
+                var shouldNotBeDropped = curJob.bill.GetStoreMode() != BillStoreModeDefOf.DropOnFloor;
+                var hasBetterPlace = StoreUtility.TryFindBestBetterStoreCellFor(objectThing, actor, actor.Map, StoragePriority.Unstored, actor.Faction, out var vec);
+                
+                if (shouldNotBeDropped && hasBetterPlace)
+                {
+                    actor.carryTracker.TryStartCarry(objectThing, 1);
+                    curJob.SetTarget(HaulTi, vec); 
+                    curJob.count = 99999;
+                    return;
+                }
+                
+                actor.carryTracker.TryStartCarry(objectThing, 1);
+                actor.carryTracker.TryDropCarriedThing(actor.Position, ThingPlaceMode.Near, out objectThing);
+                actor.jobs.EndCurrentJob(JobCondition.Succeeded);
+            };
+            return toil;
+        }
+        
+        private Toil DoBill()
         {
             var actor = GetActor();
             var curJob = actor.jobs.curJob;
@@ -37,34 +90,24 @@ namespace HolyWasher
                 },
                 tickAction = delegate
                 {
-                    if (objectThing == null || objectThing.Destroyed)
-                    {
-                        actor.jobs.EndCurrentJob(JobCondition.Incompletable);
-                    }
+                    if (objectThing == null || objectThing.Destroyed) actor.jobs.EndCurrentJob(JobCondition.Incompletable);
 
                     _workCycleProgress -= actor.GetStatValue(StatDefOf.WorkToMake);
 
                     tableThing?.UsedThisTick();
 
-                    if (!(_workCycleProgress <= 0))
-                    {
-                        return;
-                    }
+                    if (!(_workCycleProgress <= 0)) return;
 
                     var skillDef = curJob.RecipeDef.workSkill;
                     if (skillDef != null)
                     {
                         var skill = actor.skills.GetSkill(skillDef);
-
                         skill?.Learn(0.11f * curJob.RecipeDef.workSkillLearnFactor);
                     }
 
                     actor.GainComfortFromCellIfPossible();
 
-                    if (objectThing is Apparel mendApparel)
-                    {
-                        _apparelWornByCorpseInt.SetValue(mendApparel, false);
-                    }
+                    if (objectThing is Apparel mendApparel)  _apparelWornByCorpseInt.SetValue(mendApparel, false);
 
                     var list = new List<Thing> { objectThing };
                     curJob.bill.Notify_IterationCompleted(actor, list);
@@ -74,8 +117,7 @@ namespace HolyWasher
                 },
                 defaultCompleteMode = ToilCompleteMode.Never
             };
-
-
+            
             toil.WithEffect(() => curJob.bill.recipe.effectWorking, TableTi);
             toil.PlaySustainerOrSound(() => toil.actor.CurJob.bill.recipe.soundWorking);
             toil.WithProgressBar(TableTi, () => objectThing.HitPoints / (float)objectThing.MaxHitPoints,
@@ -84,6 +126,11 @@ namespace HolyWasher
                               curJob.GetTarget(TableTi).Thing is IBillGiver billGiver &&
                               !billGiver.CurrentlyUsableForBills());
             return toil;
+        }
+        
+        public override string GetReport()
+        {
+            return pawn.jobs.curJob.RecipeDef != null ? base.ReportStringProcessed(pawn.jobs.curJob.RecipeDef.jobString) : base.GetReport();
         }
     }
 }
