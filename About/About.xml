@@ -1,22 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
-  <name>HolyWasher (Continued)</name>
-  <packageId>Mlie.HolyWasher</packageId>
-  <author>sma342, Blacharnia, ccharon</author>
-  <url>https://github.com/ccharon/RimWorld-HolyWasher</url>
-  <supportedVersions>
-    <li>1.4</li>
-  </supportedVersions>
-  <modDependencies />
-  <loadAfter />
-  <description>Holy Washer is a washing machine that washes off tainted effect from clothes. No more taint on that apparel!
+    <name>HolyWasher (Continued)</name>
+    <packageId>Mlie.HolyWasher</packageId>
+    <author>sma342, Blacharnia, ccharon</author>
+    <url>https://github.com/ccharon/RimWorld-HolyWasher</url>
+    <supportedVersions>
+        <li>1.4</li>
+    </supportedVersions>
+    <modDependencies/>
+    <loadAfter/>
+    <description>Holy Washer is a washing machine that removes worn by corpse effect from apparel. No more taint on that
+        apparel!
 
-Original C# Code - Blacharnia
-C# Code - Mlie
-XML Code and Artwork - sma342
-Additional C# help - erdelf
-1.0 Textures - HCSK Team
-v1.4.1
-Rimworld 1.4 compatibility ccharon
-</description>
+        Original C# Code - Blacharnia
+        C# Code - Mlie
+        XML Code and Artwork - sma342
+        Additional C# help - erdelf
+        1.0 Textures - HCSK Team
+        Rimworld 1.4 compatibility ccharon
+    </description>
 </ModMetaData>
