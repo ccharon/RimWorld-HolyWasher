@@ -112,7 +112,7 @@ namespace HolyWasher
             if (billGiver is not Building building) return billGiver.Position;
             if (building.def.hasInteractionCell) return building.InteractionCell;
 
-            Log.Error("HolyWash :: Tried to find bill ingredients for " + billGiver + " which has no interaction cell.");
+            Log.Error("[HolyWasher]: Tried to find bill ingredients for " + billGiver + " which has no interaction cell.");
             return forPawn.Position;
         }
     }
