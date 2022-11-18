@@ -4,6 +4,5 @@ namespace HolyWasher
 {
     public class Worker : RecipeWorker
     {
-        // this is a dummy
     }
 }
