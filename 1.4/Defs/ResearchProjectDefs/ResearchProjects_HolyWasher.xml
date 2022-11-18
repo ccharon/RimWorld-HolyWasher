@@ -3,8 +3,7 @@
     <ResearchProjectDef>
         <defName>BasicWashing</defName>
         <label>basic washing</label>
-        <description>Advanced construction techniques allow for production of the metal basin to wash clothes
-        </description>
+        <description>Advanced construction techniques allow for production of the metal basin to wash clothes</description>
         <baseCost>250</baseCost>
         <techLevel>Neolithic</techLevel>
         <tags>
