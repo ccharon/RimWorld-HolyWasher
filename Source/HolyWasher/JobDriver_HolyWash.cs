@@ -120,11 +120,10 @@ namespace HolyWasher
             
             toil.WithEffect(() => curJob.bill.recipe.effectWorking, TableTi);
             toil.PlaySustainerOrSound(() => toil.actor.CurJob.bill.recipe.soundWorking);
-            toil.WithProgressBar(TableTi, () => objectThing.HitPoints / (float)objectThing.MaxHitPoints,
-                false, 0.5f);
-            toil.FailOn(() => curJob.bill.suspended || curJob.bill.DeletedOrDereferenced ||
-                              curJob.GetTarget(TableTi).Thing is IBillGiver billGiver &&
-                              !billGiver.CurrentlyUsableForBills());
+            toil.WithProgressBar(TableTi, () => objectThing.HitPoints / (float)objectThing.MaxHitPoints, false, 0.5f);
+            toil.FailOn(() => curJob.bill.suspended 
+                              || curJob.bill.DeletedOrDereferenced 
+                              || (curJob.GetTarget(TableTi).Thing is IBillGiver billGiver && !billGiver.CurrentlyUsableForBills()));
             return toil;
         }
         
